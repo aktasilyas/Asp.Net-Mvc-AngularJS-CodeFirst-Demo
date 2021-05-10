@@ -1,0 +1,107 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div class="container" style="margin-top:50px;" ng-app="productApp" ng-controller="productController">
+    <div class="row">
+        <div class="col-md-4">
+            <form>
+                <div class="form-group">
+                    <input id="name" class="form-control" type="text" ng-model="Product.ProductName" placeholder="name" />
+                </div>
+                <div class="form-group">
+                    <input id="price" class="form-control" type="text" ng-model="Product.UnitPrice" placeholder="price" />
+                </div>
+                <div class="form-group">
+                    <input id="stok" class="form-control" type="text" ng-model="Product.Stok" placeholder="stok" />
+                </div>
+                <button id="save" class="btn btn-primary" ng-click="Save(Product)"> Save</button>
+            </form>
+        </div>
+        <div class="col-md-8">
+            <div id="alert" class="alert alert-success">Success</div>
+            <table class="table table-bordered table-striped table-dark">
+                <thead>
+                    <tr>
+
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Stok</th>
+                        <th>#</th>
+                        <th>#</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="p in Product">
+                        <td>{{p.ProductName}}</td>
+                        <td>{{p.UnitPrice}}</td>
+                        <td>{{p.Stok}}</td>
+                        <td><button class="btn btn-danger" ng-click="Delete(p)">Delete</button></td>
+                        <td><button class="btn btn-warning" ng-click="Update(p)">Update</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+<script src="~/Scripts/angular.min.js"></script>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script>
+    var app = angular.module('productApp', []);
+    app.controller('productController', function ($scope, $http) {
+        $scope.GetAllProduct = function () {
+            $http({
+                method: 'Get',
+                url: "/Product/GetAll"
+            }).then(function (result) {
+                $scope.Product = result.data;
+            });
+        }
+        $scope.GetAllProduct();
+        $scope.Save = function (product) {
+
+            if ($('#save').text() == 'Save') {
+                debugger
+                $http({
+                    method: 'Post',
+                    url: "/Product/Add",
+                    data: product
+                }).then(function (result) {
+                    alert("success");
+                });
+            } else {
+                debugger
+                $http({
+                    method: 'Post',
+                    url: "/Product/Update",
+                    data: product
+                }).then(function (result) {
+                    alert("success");
+                    $('#save').text("Save");
+                });
+            }
+        }
+        $scope.Delete = function (p) {
+            $http({
+                method: 'Post',
+                url: "/Product/Delete",
+                data: p
+            }).then(function (result) {
+                alert("success");
+                $scope.GetAllProduct();
+            });
+        }
+        $scope.Update = function (p) {
+       
+            $('#name').val(p.ProductName);
+            $('#price').val(p.UnitPrice);
+            $('#stok').val(p.Stok);
+            $('#save').text("Update");
+        }
+     
+    });
+
+</script>
